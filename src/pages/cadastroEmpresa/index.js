@@ -14,7 +14,6 @@ export default function CadastroEmpresa() {
     const [dados,setDados]=useState([]);
     const [responsavel,setResponsavel] = useState("");
     
-
     useEffect(()=>{
         mostrardados();
     },[])
