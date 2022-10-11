@@ -1,10 +1,11 @@
 import React, { useState,useEffect } from 'react';
 import Head from "../../componentres/Head";
 import Menu from "../../componentres/Menu";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function Cadastrousuario() {
+export default function Editarusuario(){
     const navigate = useNavigate();
+    const {id} = useParams();
     const [nome, setNome] = useState("");
     const [email, setEmail]  = useState("");
     const [senha, setSenha] = useState("");
@@ -23,7 +24,11 @@ export default function Cadastrousuario() {
     function mostrardados(){
         let lista = JSON.parse (localStorage.getItem("cad-usuarios")||"[]");
         setDados(lista);
-
+        let usu = lista.filter(item=>item.id==id);
+        setNome(usu[0].nome);
+        setEmail(usu[0].email);
+        setSenha(usu[0].senha);
+        setConfirmar(usu[0].senha);
     }
 
     function verificarduplicidade(email){
@@ -40,10 +45,6 @@ export default function Cadastrousuario() {
         let errorMsg = [];
         if (nome.length<3) {
             errorMsg.push("Campo tem menos de 3 caracteres\n");
-            i++;
-        }
-        if (verificarduplicidade(email)==true){
-            errorMsg.push("O e-mail fornecido já está cadastrado!");
             i++;
         }
         if (email.length == 0) {
@@ -70,16 +71,25 @@ export default function Cadastrousuario() {
         }
         if (i == 0) {
             setMsg("");
+            let dadosnovos=[];
             let lista = JSON.parse(localStorage.getItem("cad-usuarios")||"[]");
-            lista.push(
-                {
-                    id:Date.now().toString(36)+Math.floor(Math.pow(10,12)+Math.random()*9*Math.pow(10,12)).toString(36),
-                    nome:nome,
-                    email:email,
-                    senha:senha
+            dadosnovos=lista.map((function(item){
+                if (item.id==id){
+                    return { id:id,
+                             nome:nome,
+                             email:email,
+                             senha:senha
+                    }
                 }
-            )
-            localStorage.setItem("cad-usuarios", JSON.stringify(lista));
+                else{
+                    return { id:item.id,
+                        nome:item.nome,
+                        email:item.email,
+                        senha:item.senha
+                    }
+                }
+            }));
+            localStorage.setItem("cad-usuarios", JSON.stringify(dadosnovos));
             alert("Dados Salvos com Sucesso!");
             navigate("/listausuarios");
         }
